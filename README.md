@@ -1,5 +1,7 @@
 # microtest
 
+[![Build Status](https://travis-ci.com/michaelhelvey/microtest.svg?branch=master)](https://travis-ci.com/michaelhelvey/microtest)
+
 Simple API testing utility for Node.js.
 
 Goals:
