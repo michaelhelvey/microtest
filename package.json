@@ -6,7 +6,6 @@
   "repository": "https://github.com/michaelhelvey/microtest",
   "author": "Michael Helvey <michael.helvey1@gmail.com>",
   "license": "MIT",
-  "private": false,
   "scripts": {
     "build": "tsc",
     "test": "jest",
@@ -15,7 +14,7 @@
     "lint:tslint": "tslint --project .",
     "lint": "yarn lint:prettier && yarn lint:tslint",
     "type-check": "yarn build --noEmit",
-    "prepublish": "yarn format && yarn lint && yarn test && yarn build"
+    "prepare": "yarn format && yarn lint && yarn test && yarn build"
   },
   "devDependencies": {
     "@types/express": "^4.17.0",
