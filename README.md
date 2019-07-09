@@ -56,8 +56,7 @@ listen/close logic doesn't play well with the Jest test runner. I thought I'd
 try my hand at building a simple, one file utility based around the `fetch` api,
 which most web developers are familiar with. I had two goals for the library:
 
-1. It should be easy to read to read the source understand what it was doing to
-   your server.
+1. It should be straightforward to read the source and understand how it's testing your server.
 2. It should be framework and test-runner agnostic.
 
 I wrote this library as a personal utility to address a couple of my own
