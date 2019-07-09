@@ -1,6 +1,8 @@
 # microtest
 
 [![Build Status](https://travis-ci.com/michaelhelvey/microtest.svg?branch=master)](https://travis-ci.com/michaelhelvey/microtest)
+[![npm version](https://badge.fury.io/js/%40michaelhelvey%2Fmicrotest.svg)](https://badge.fury.io/js/%40michaelhelvey%2Fmicrotest)
+![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 
 Simple API testing utility for Node.js.
 
