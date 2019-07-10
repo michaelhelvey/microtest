@@ -1,5 +1,6 @@
 import * as http from 'http'
 import fetch from 'node-fetch'
+import { AddressInfo } from 'net'
 
 interface ImplementsListen {
   listen: (...args: any[]) => http.Server
@@ -22,7 +23,7 @@ class TestDriver {
   private options: RequestBuilderOptions = {
     headers: {},
     method: 'GET',
-    port: 3456,
+    port: 0,
     requestOptionsOverrides: {},
   }
   constructor(app: ImplementsListen) {
@@ -92,8 +93,13 @@ class TestDriver {
 
   public async raw() {
     this.server = this.app.listen(this.options.port)
+    const serverAddressInfo = this.server.address()
+    let port: number = 0
+    if (serverAddressInfo && typeof serverAddressInfo === 'object') {
+      port = serverAddressInfo.port
+    }
     const response = await fetch(
-      `http://localhost:${this.options.port}${this.options.path}`,
+      `http://localhost:${port}${this.options.path}`,
       {
         method: this.options.method,
         headers: this.options.headers,

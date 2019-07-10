@@ -1,6 +1,6 @@
 {
   "name": "@michaelhelvey/microtest",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Simple, functional testing utility for Node.js APIs",
   "main": "build/index.js",
   "repository": "https://github.com/michaelhelvey/microtest",
