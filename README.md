@@ -39,7 +39,7 @@ More advanced customization:
 const response = await test(app)
   .get('/test')
   .port(4567) // run the test server on a custom port
-  .fetchOptions({ mode: 'no-cors' }) // custom fetch options that will be merged into the `node-fetch` call.
+  .fetchOptions({ compress: true }) // custom fetch options that will be merged into the `node-fetch` call.
   .raw() // return the raw response object from `node-fetch`
 expect(response.ok).toBeTruthy()
 ```

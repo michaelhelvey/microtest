@@ -1,5 +1,6 @@
 import * as http from 'http'
-import fetch, { RequestInit } from 'node-fetch'
+import fetch, { RequestInit, Response } from 'node-fetch'
+import * as assert from 'assert'
 
 interface ImplementsListen {
   listen: (...args: any[]) => http.Server
@@ -19,6 +20,7 @@ interface RequestBuilderOptions {
 class TestDriver {
   private app: ImplementsListen
   private server: http.Server
+  private statusAssertion: number | null = null
   private options: RequestBuilderOptions = {
     headers: {},
     method: 'GET',
@@ -120,6 +122,20 @@ class TestDriver {
   }
 
   /**
+   * Tells microtest to assert a given response status before returning a response
+   * from .raw(), .text() etc.
+   * @param status
+   */
+  public assertStatus(status: number) {
+    if (this.statusAssertion) {
+      throw new Error('Can only assert one status per request')
+    } else {
+      this.statusAssertion = status
+    }
+    return this
+  }
+
+  /**
    * starts a test server, makes an HTTP request over localhost with the options
    * set by the previous functions, and returns a promise which resolves to the
    * raw Response object from node-fetch
@@ -141,6 +157,9 @@ class TestDriver {
       }
     )
     this.server.close()
+    // before we return the response we need to call any status assertion handlers
+    // that have been set
+    this._handleStatusCodeAssertions(response)
     return response
   }
 
@@ -166,6 +185,15 @@ class TestDriver {
     if (this.options.path) {
       throw new Error(
         'Path has already been set.  You can only call a request method (get, put, patch, etc) one time per request builder.'
+      )
+    }
+  }
+
+  private _handleStatusCodeAssertions(response: Response) {
+    if (this.statusAssertion) {
+      assert(
+        response.status === this.statusAssertion,
+        `You asserted a status of ${this.statusAssertion} but a status of ${response.status} was received.`
       )
     }
   }

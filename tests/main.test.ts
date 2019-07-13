@@ -6,6 +6,8 @@ import * as FormData from 'form-data'
 import * as multer from 'multer'
 import test from '../src'
 
+// tslint:disable:no-floating-promises
+
 describe('express:microtest', () => {
   const app = express()
   app.use(bodyParser.json())
@@ -98,9 +100,40 @@ describe('express:microtest', () => {
   it('passes through custom options', async () => {
     const response = await test(app)
       .post('/testget') // cannot post to /testget
-      .fetchOptions({ mode: 'no-cors' })
+      .fetchOptions({ compress: true })
       .raw()
     expect(response.status).toBe(404)
+  })
+
+  it('assert response status: 200', () => {
+    const response = test(app)
+      .get('/testget')
+      .assertStatus(200)
+      .text()
+    expect(response).resolves.toBe('get response')
+  })
+
+  it('assert response status: 404', () => {
+    const response = test(app)
+      .get('/asdfasdfasdf')
+      .assertStatus(404)
+      .text()
+    expect(response).resolves.toBeTruthy()
+  })
+  it('assert response status: throws when not met', () => {
+    const response = test(app)
+      .get('/asdfasdfasdf')
+      .assertStatus(200)
+      .text()
+    expect(response).rejects.toBeTruthy()
+  })
+  it('assert response status: throws if called multiple times', () => {
+    const testThrow = () =>
+      test(app)
+        .get('/asdfasdfasdf')
+        .assertStatus(200)
+        .assertStatus(404)
+    expect(testThrow).toThrowError('Can only assert one status per request')
   })
 })
 
