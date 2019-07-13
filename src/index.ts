@@ -1,6 +1,5 @@
 import * as http from 'http'
 import fetch, { RequestInit } from 'node-fetch'
-import { AddressInfo } from 'net'
 
 interface ImplementsListen {
   listen: (...args: any[]) => http.Server
