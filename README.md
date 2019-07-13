@@ -65,14 +65,6 @@ that useful for you, and that's just fine. :) As it is, this library is probably
 full of edge cases that I haven't thought of because the limited range of
 services I end up testing.
 
-### Changelog
-
-- 0.0.2
-  - Updated connection logic to use a random port for each request if no custom
-    port is specified by the user.
-- 0.0.1
-  - Initial version
-
 ### LICENSE
 
 MIT
