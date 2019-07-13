@@ -1,5 +1,5 @@
 import * as http from 'http'
-import fetch from 'node-fetch'
+import fetch, { RequestInit } from 'node-fetch'
 import { AddressInfo } from 'net'
 
 interface ImplementsListen {
@@ -26,31 +26,60 @@ class TestDriver {
     port: 0,
     requestOptionsOverrides: {},
   }
+  /**
+   * creates a new test driver
+   * @param app any object that impments a listen() function.  i.e. http.Server,
+   * express(), new koa()
+   */
   constructor(app: ImplementsListen) {
     this.app = app
   }
 
+  /**
+   * overrides the default port that the test server runs on. by default, the
+   * server port is set to 0 so that a random port will be chosen
+   * @param customPort
+   */
   public port(customPort: number) {
     this.options.port = customPort
     return this
   }
 
+  /**
+   * sets the raw "body" options argument passed to node-fetch
+   * @param postBody
+   */
   public send(postBody: any) {
     this.options.postBody = postBody
     return this
   }
 
+  /**
+   * Sets the JSON-stingified "body" options argument passed to node-fetch
+   * and sets 'Content-Type: application/json' header
+   * @param json The json to be JSON.stringified
+   */
   public sendJSON(json: any) {
     this.options.postBody = JSON.stringify(json)
     this.header('Content-Type', 'application/json')
     return this
   }
 
-  public fetchOptions(options: any) {
+  /**
+   *
+   * @param options Custom options to be passed to node-fetch.  Will override
+   * any option set by microtest.
+   */
+  public fetchOptions(options: Partial<RequestInit>) {
     this.options.requestOptionsOverrides = options
     return this
   }
 
+  /**
+   *
+   * @param key header key, i.e. Content-Type
+   * @param value header value, i.e. application/json
+   */
   public header(key: string, value: string) {
     this.options.headers[key] = value
     return this
@@ -91,6 +120,11 @@ class TestDriver {
     return this
   }
 
+  /**
+   * starts a test server, makes an HTTP request over localhost with the options
+   * set by the previous functions, and returns a promise which resolves to the
+   * raw Response object from node-fetch
+   */
   public async raw() {
     this.server = this.app.listen(this.options.port)
     const serverAddressInfo = this.server.address()
@@ -111,12 +145,18 @@ class TestDriver {
     return response
   }
 
+  /**
+   * Calls this.raw() but additionally parses the Response as json
+   */
   public async json() {
     const response = await this.raw()
     const json = await response.json()
     return json
   }
 
+  /**
+   * Calls this.raw() but additionally parses the Response as text
+   */
   public async text() {
     const response = await this.raw()
     const text = await response.text()
