@@ -191,8 +191,9 @@ class TestDriver {
 
   private _handleStatusCodeAssertions(response: Response) {
     if (this.statusAssertion) {
-      assert(
-        response.status === this.statusAssertion,
+      assert.strictEqual(
+        response.status,
+        this.statusAssertion,
         `You asserted a status of ${this.statusAssertion} but a status of ${response.status} was received.`
       )
     }
