@@ -1,9 +1,10 @@
 import * as http from 'http'
 import fetch, { RequestInit, Response } from 'node-fetch'
 import * as assert from 'assert'
+import { AddressInfo } from 'net'
 
 interface ImplementsListen {
-  listen: (...args: any[]) => http.Server
+  listen: (...args: any[]) => http.Server | Promise<{ server: http.Server }>
 }
 
 type HTTPMethod = 'GET' | 'PUT' | 'PATCH' | 'POST' | 'DELETE'
@@ -141,11 +142,20 @@ class TestDriver {
    * raw Response object from node-fetch
    */
   public async raw() {
-    this.server = this.app.listen(this.options.port)
-    const serverAddressInfo = this.server.address()
+    const maybeServer = await this.app.listen(this.options.port)
+    if (typeof (maybeServer as any).server === 'object') {
+      this.server = (maybeServer as any).server
+    } else {
+      this.server = maybeServer as http.Server
+    }
+
     let port: number = 0
-    if (serverAddressInfo && typeof serverAddressInfo === 'object') {
-      port = serverAddressInfo.port
+    if (
+      this.server.address &&
+      this.server.address() &&
+      typeof this.server.address() === 'object'
+    ) {
+      port = (this.server.address() as AddressInfo).port
     }
     const response = await fetch(
       `http://localhost:${port}${this.options.path}`,

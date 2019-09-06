@@ -1,2 +1,4 @@
 node_modules
 build
+# generated from `npm link` during development
+package-lock.json

@@ -5,6 +5,7 @@ import * as bodyParser from 'body-parser'
 import * as FormData from 'form-data'
 import * as multer from 'multer'
 import test from '../src'
+import { ApolloServer, gql } from 'apollo-server'
 
 // tslint:disable:no-floating-promises
 
@@ -164,5 +165,22 @@ describe('http-server:microtest', () => {
       .get('/whatever')
       .text()
     expect(response).toBe('Hello from raw node.js!')
+  })
+})
+
+describe('apollo-server:microtest', () => {
+  it('correctly gets the internal http server from apollo server', async () => {
+    const typeDefs = gql`
+      type Query {
+        hello: String
+      }
+    `
+    const resolvers = { Query: { hello: () => 'Hi' } }
+    const server = new ApolloServer({ typeDefs, resolvers })
+
+    await test(server)
+      .get('/.well-known/apollo/server-health')
+      .assertStatus(200)
+      .raw()
   })
 })
