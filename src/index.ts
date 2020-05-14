@@ -176,7 +176,7 @@ class TestDriver {
   /**
    * Calls this.raw() but additionally parses the Response as json
    */
-  public async json() {
+  public async json<T = any>(): Promise<T> {
     const response = await this.raw()
     const json = await response.json()
     return json
