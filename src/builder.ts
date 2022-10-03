@@ -13,13 +13,13 @@ enum HttpMethod {
 }
 
 interface BuilderConfig {
-	host: string
+	baseURL: string
 	path: string
 	queryParams?: Record<string, unknown>
 }
 
 interface RequestOptions {
-	url: string | URL
+	url: string
 	options: RequestInit
 }
 
@@ -36,10 +36,10 @@ export class RequestBuilder {
 	private config: BuilderConfig
 
 	constructor(
-		host: string,
+		baseURL: string,
 		private readonly queryParser: QueryParser = defaultQueryParser
 	) {
-		this.config = { host, path: '' }
+		this.config = { baseURL, path: '' }
 	}
 
 	public toRequestOptions(): RequestOptions {
@@ -48,7 +48,7 @@ export class RequestBuilder {
 			: `/${this.config.path}`
 
 		return {
-			url: `${this.config.host}${path}${this.parseQueryParams()}`,
+			url: `${this.config.baseURL}${path}${this.parseQueryParams()}`,
 			options: this._options,
 		}
 	}
