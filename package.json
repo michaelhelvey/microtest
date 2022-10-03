@@ -1,7 +1,20 @@
 {
-	"name": "node-ts-starter",
-	"version": "1.0.0",
-	"description": "Node.JS + Typescript Starter Pack",
+	"name": "@michaelhelvey/microtest",
+	"version": "2.0.0",
+	"description": "Simple fetch-based integration testing library for Node.js",
+	"keywords": [
+		"testing",
+		"api",
+		"e2e",
+		"end-to-end",
+		"integration"
+	],
+	"author": {
+		"name": "Michael Helvey",
+		"email": "michael.helvey1@gmail.com",
+		"url": "https://michaelhelvey.dev"
+	},
+	"license": "MIT",
 	"sideEffects": false,
 	"type": "module",
 	"types": "./dist/index.d.ts",
@@ -12,8 +25,6 @@
 		}
 	},
 	"scripts": {
-		"start": "node ./dist/index.js",
-		"dev": "tsx ./src/index.ts",
 		"test": "vitest",
 		"test:coverage": "vitest --coverage",
 		"lint": "eslint src --cache --ext .js,.jsx,.ts,.tsx",
@@ -23,13 +34,6 @@
 		"validate": "pnpm lint && pnpm test -- run && pnpm typecheck && pnpm build",
 		"prepare": "husky install"
 	},
-	"keywords": [],
-	"author": {
-		"name": "Michael Helvey",
-		"email": "michael.helvey1@gmail.com",
-		"url": "https://michaelhelvey.dev"
-	},
-	"license": "MIT",
 	"engines": {
 		"node": ">=16.0.0"
 	},
