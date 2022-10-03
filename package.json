@@ -32,6 +32,9 @@
 		"format": "prettier --write src/**/*.ts",
 		"typecheck": "tsc --noEmit",
 		"validate": "pnpm lint && pnpm test -- run && pnpm typecheck && pnpm build",
+		"docs": "run-s \"docs:*\"",
+		"docs:generate": "typedoc --out docs src/index.ts",
+		"docs:preview": "serve ./docs",
 		"prepare": "husky install"
 	},
 	"engines": {
@@ -56,9 +59,12 @@
 		"express": "^4.18.1",
 		"husky": "^8.0.1",
 		"lint-staged": "^13.0.3",
+		"npm-run-all": "^4.1.5",
 		"prettier": "^2.7.1",
+		"serve": "^14.0.1",
 		"tsup": "^6.2.3",
 		"tsx": "^3.9.0",
+		"typedoc": "^0.23.15",
 		"typescript": "4.8.4",
 		"vite": "^3.1.4",
 		"vite-tsconfig-paths": "^3.5.1",

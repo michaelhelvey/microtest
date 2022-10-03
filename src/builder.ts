@@ -2,6 +2,9 @@ import FormData from 'form-data'
 import { BodyInit, RequestInit } from 'node-fetch'
 import { defaultQueryParser, QueryParser } from './query'
 
+/**
+ * Enum of http method names
+ */
 enum HttpMethod {
 	Head = 'HEAD',
 	Options = 'OPTIONS',
@@ -18,6 +21,9 @@ interface BuilderConfig {
 	queryParams?: Record<string, unknown>
 }
 
+/**
+ * The configuration object that the RequestBuilder is designed to produce.
+ */
 interface RequestOptions {
 	url: string
 	options: RequestInit
@@ -41,7 +47,8 @@ export class RequestBuilder {
 	 * Serializes all the current options into an object which can be used to
 	 * make a request using the `fetch` API.
 	 *
-	 * @returns {RequestOptions} options for making a fetch request
+	 * @private
+	 * @returns options for making a fetch request
 	 */
 	public toRequestOptions(): RequestOptions {
 		const path = this.config.path.startsWith('/')
@@ -205,6 +212,28 @@ export class RequestBuilder {
 			[key]: value,
 		}
 
+		return this
+	}
+
+	/**
+	 * Override fetch options directly.  This is useful if you want to provide
+	 * highly customized logic to the underlying request, such as providing an
+	 * AbortController.
+	 *
+	 * Note that this merges your options directly with the builder's underlying
+	 * options, so if, for example, you previously set a header, but now
+	 * override `headers`, your previous changes will not be reflected in the
+	 * request.  For this reason, it's strongly recommended to use this method
+	 * _only_ for options that are _not_ provided elsewhere on the builder.
+	 *
+	 * @param options options which will be passed directly to `fetch`
+	 * @returns the builder object, for chaining
+	 */
+	public fetchOptions(options: Partial<RequestInit>) {
+		this._options = {
+			...this._options,
+			...options,
+		}
 		return this
 	}
 

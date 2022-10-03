@@ -3,6 +3,9 @@ import fetch, { Response } from 'node-fetch'
 import { RequestBuilder } from '~/builder'
 import { defaultQueryParser, QueryParser } from './query'
 
+/**
+ * Optional configuration to customize the request builder
+ */
 export interface RunnerConfiguration {
 	/**
 	 * An optional custom query parameter parser to pass through to the
@@ -46,15 +49,28 @@ export function runner(
 
 type ResponseAssertion = (response: Response) => Response | Promise<Response>
 
+/**
+ * ResponseParser parses and makes assertions about responses.
+ */
 export class ResponseParser {
 	private assertions: ResponseAssertion[] = []
 
 	constructor(private readonly response: Promise<Response>) {}
 
+	/**
+	 * Runs assertions and returns a raw http response
+	 *
+	 * @returns a raw HttpResponse
+	 */
 	public raw() {
 		return this.awaitRequest()
 	}
 
+	/**
+	 * Runs assertions and returns the HTTP response body parsed as json
+	 *
+	 * @returns JSON response body, or throws an error if unparsable
+	 */
 	public async json<T = any>(): Promise<T> {
 		const response = await this.awaitRequest()
 		try {
@@ -70,6 +86,11 @@ export class ResponseParser {
 		}
 	}
 
+	/**
+	 * Runs assertions and returns the HTTP response body parsed as text
+	 *
+	 * @returns response body as text
+	 */
 	public async text() {
 		const response = await this.awaitRequest()
 		return response.text()

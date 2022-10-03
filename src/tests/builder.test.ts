@@ -102,4 +102,12 @@ describe('Builder', () => {
 		const builder = new RequestBuilder(host).get('foo')
 		expect(builder.toRequestOptions().url).toEqual(`${host}/foo`)
 	})
+
+	test('allows passing custom fetch options', () => {
+		const builder = new RequestBuilder(host)
+			.get()
+			.fetchOptions({ port: 1000 })
+
+		expect(builder.toRequestOptions().options).toMatchObject({ port: 1000 })
+	})
 })
