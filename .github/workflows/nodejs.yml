@@ -11,8 +11,8 @@ on:
 
 jobs:
     build:
+        name: 💿 Build & Test
         runs-on: ubuntu-latest
-
         strategy:
             matrix:
                 node-version: [16]
