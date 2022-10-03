@@ -1,6 +1,7 @@
 import express from 'express'
 import http from 'node:http'
 import { runner } from '~/runner'
+import { microtest } from '..'
 
 const app = express()
 
@@ -10,6 +11,10 @@ app.get('/', (_req, res) => {
 
 app.get('/json', (_req, res) => {
 	res.status(200).send({ foo: 'bar' })
+})
+
+app.get('/query', (req, res) => {
+	res.send(req.query)
 })
 
 let server: http.Server
@@ -24,7 +29,8 @@ afterAll(() => {
 	server.close()
 })
 
-const request = runner('http://localhost:9999')
+const host = 'http://localhost:9999'
+const request = runner(host)
 
 test('can get a raw response', async () => {
 	const response = await request((ctx) => ctx.get('/')).raw()
@@ -55,4 +61,15 @@ test('can assert response status', async () => {
 		.status(404)
 		.text()
 	await expect(response).rejects.toThrowError(/failed status code check/i)
+})
+
+test('can provide custom query parser', async () => {
+	const customParser = microtest(host, { queryParser: (params) => 'foo=bar' })
+	const response = await customParser((ctx) =>
+		ctx.get('/query').query({ bar: 'baz' })
+	)
+		.status(200)
+		.json()
+
+	expect(response).toMatchObject({ foo: 'bar' })
 })

@@ -1,10 +1,42 @@
 import chalk from 'chalk'
 import fetch, { Response } from 'node-fetch'
 import { RequestBuilder } from '~/builder'
+import { defaultQueryParser, QueryParser } from './query'
 
-export function runner(baseURL: string) {
+export interface RunnerConfiguration {
+	/**
+	 * An optional custom query parameter parser to pass through to the
+	 * underlying request builder.  This parser will be used to parse the
+	 * arguments passed to the `query` function on the builder.
+	 *
+	 * @example
+	 * const request = microtest(
+	 *     'host',
+	 *     { queryParser: (params) => qs.stringify(params, { arrayFormat: 'repeat' })}
+	 * )
+	 */
+	queryParser?: QueryParser
+}
+
+/**
+ * Create a microtest runner.  This runner can be used to make requests, parse
+ * the results, and make assertions about the response.
+ *
+ * @example
+ * const request = microtest('http://localhost:9999')
+ * const response = await request(ctx => ctx.get('/').query({ foo: 'bar' })).status(200).json()
+ * expect(response.message).toEqual('something from my api')
+ *
+ * @param baseURL The base url that all requests should be made to
+ * @param config Optionally, a configuration object customizing the behavior of the request builder
+ * @returns a function that can be used to make and parse HTTP requests
+ */
+export function runner(
+	baseURL: string,
+	{ queryParser = defaultQueryParser }: RunnerConfiguration = {}
+) {
 	return (callback: (_: RequestBuilder) => RequestBuilder) => {
-		const builder = callback(new RequestBuilder(baseURL))
+		const builder = callback(new RequestBuilder(baseURL, queryParser))
 		const options = builder.toRequestOptions()
 
 		const response = fetch(options.url, options.options)
