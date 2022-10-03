@@ -1,4 +1,4 @@
-export * from '~/lib'
+export * from '~/builder'
 
 type Message<T> = { content: T }
 
