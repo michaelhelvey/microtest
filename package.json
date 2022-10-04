@@ -1,6 +1,6 @@
 {
 	"name": "@michaelhelvey/microtest",
-	"version": "2.0.0-alpha.1",
+	"version": "2.0.0",
 	"description": "Simple fetch-based integration testing library for Node.js",
 	"keywords": [
 		"testing",
@@ -41,7 +41,6 @@
 		"docs:generate": "typedoc --out docs src/index.ts",
 		"docs:preview": "serve ./docs",
 		"prepublishOnly": "pnpm validate && pnpm build",
-		"publish": "npm publish",
 		"prepare": "husky install"
 	},
 	"engines": {
