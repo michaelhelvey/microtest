@@ -23,6 +23,11 @@ pnpm add -D @michaelhelvey/microtest
 
 _Or use the package manager of your choice._
 
+Please note that microtest only supports ESM. If you use a test runner like
+[vitest](https://vitest.dev) that supports ESM by default, this should not be a
+problem. For other test runners, see their documentation for handling ESM
+modules.
+
 ### Usage
 
 ```ts
@@ -69,7 +74,9 @@ test('my api integration test', () => {
 })
 ```
 
-For more information, see the complete docs. (TODO)
+While this simple example, along with typescript autocomplete, is probably
+enough to get started, for more information, see the [full API
+documentation](https://michaelhelvey.github.io/microtest/).
 
 ## Contributing
 

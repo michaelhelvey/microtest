@@ -1,6 +1,6 @@
 {
 	"name": "@michaelhelvey/microtest",
-	"version": "2.0.0-alpha.0",
+	"version": "2.0.0-alpha.1",
 	"description": "Simple fetch-based integration testing library for Node.js",
 	"keywords": [
 		"testing",
@@ -14,6 +14,11 @@
 		"email": "michael.helvey1@gmail.com",
 		"url": "https://michaelhelvey.dev"
 	},
+	"files": [
+		"README.md",
+		"package.json",
+		"dist"
+	],
 	"license": "MIT",
 	"sideEffects": false,
 	"type": "module",
@@ -28,13 +33,14 @@
 		"test": "vitest",
 		"test:coverage": "vitest --coverage",
 		"lint": "eslint src --cache --ext .js,.jsx,.ts,.tsx",
-		"build": "tsup-node ./src/index.ts --format esm,cjs --dts --target=es2021 --clean",
+		"build": "tsup-node ./src/index.ts --format esm --dts --target=es2021 --clean",
 		"format": "prettier --write src/**/*.ts",
 		"typecheck": "tsc --noEmit",
 		"validate": "pnpm lint && pnpm test -- run && pnpm typecheck && pnpm build",
 		"docs": "run-s \"docs:*\"",
 		"docs:generate": "typedoc --out docs src/index.ts",
 		"docs:preview": "serve ./docs",
+		"prepublishOnly": "pnpm validate && pnpm build",
 		"publish": "npm publish",
 		"prepare": "husky install"
 	},
