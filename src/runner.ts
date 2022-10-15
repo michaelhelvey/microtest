@@ -1,4 +1,5 @@
 import chalk from 'chalk'
+import type * as http from 'http'
 import fetch, { Response } from 'node-fetch'
 import { RequestBuilder } from '~/builder'
 import { defaultQueryParser, QueryParser } from './query'
@@ -19,6 +20,70 @@ export interface RunnerConfiguration {
 	 * )
 	 */
 	queryParser?: QueryParser
+}
+
+/**
+ * Anything that listens on a port and returns an http.Server can be
+ * considered a "RunnableApplication." This matches the API of most common
+ * Node.js server frameworks, such as Express and Koa.
+ *
+ * If your framework does not support this API explicitly, a simple wrapper
+ * should be easy enough to write to satisfy this interface.
+ */
+export interface RunnableApplication {
+	listen: (port: number, ...args: any[]) => http.Server
+}
+
+/**
+ * Occassionally, your server will be constructed in such a way that you want to
+ * create, listen, and then tear down the server on every request, rather than
+ * starting and stopping your server in before & after each hooks. To accomodate
+ * this use-case, `microtest` provides the `withApp` higher order function.
+ *
+ * @param app The application to run on each request
+ * @returns A function can you call to get the microtest request utility.
+ *
+ * @example
+ * const request = withApp(myApplication)()
+ * const response = await request({ ...args }) // normal args here
+ */
+export function withApp(app: RunnableApplication) {
+	const server = app.listen(0) // 0 = choose random port
+	const port = determinePort(server)
+	const baseURL = `http://localhost:${port}`
+
+	return (config?: Parameters<typeof runner>[1]) => {
+		const callback = runner(baseURL, config)
+		return (...args: Parameters<typeof callback>) => {
+			const parser = callback(...args)
+
+			return parser.addAfterHook(() => waitForServerToStop(server))
+		}
+	}
+}
+
+function waitForServerToStop(server: http.Server) {
+	return new Promise<void>((resolve) => {
+		server.close(() => resolve())
+	})
+}
+
+export function determinePort(server: http.Server) {
+	const address = server.address()
+
+	if (!address) {
+		throw new Error(
+			'determinePort: server#address returned null.  Has the server been started?'
+		)
+	}
+
+	if (typeof address === 'string') {
+		throw new Error(
+			'Servers that listen on a unix domain socket or pipe are not supported'
+		)
+	}
+
+	return address.port
 }
 
 /**
@@ -48,14 +113,29 @@ export function runner(
 }
 
 type ResponseAssertion = (response: Response) => Response | Promise<Response>
+type AfterHook = () => void | Promise<void>
 
 /**
  * ResponseParser parses and makes assertions about responses.
  */
 export class ResponseParser {
 	private assertions: ResponseAssertion[] = []
+	private afterHooks: AfterHook[] = []
 
 	constructor(private readonly response: Promise<Response>) {}
+
+	/**
+	 * Hook into the response lifecycle to run arbitrary logic after a response
+	 * has been received.  Useful, for example, if you need to automatically
+	 * close a server when a response has been received.
+	 *
+	 * @param hook An arbitrary (possibly async) function to run after the
+	 * response has been received.
+	 */
+	public addAfterHook(hook: AfterHook) {
+		this.afterHooks.push(hook)
+		return this
+	}
 
 	/**
 	 * Runs assertions and returns a raw http response
@@ -98,6 +178,11 @@ export class ResponseParser {
 
 	private async awaitRequest() {
 		const response = await this.response
+
+		// Run all lifecycle hooks prior to parsing or asserting about the response
+		await Promise.all(this.afterHooks.map((fn) => fn()))
+
+		// Then run all assertions
 		await Promise.all(
 			this.assertions.map((assertion) => assertion(response.clone()))
 		)

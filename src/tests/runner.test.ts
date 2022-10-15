@@ -1,6 +1,6 @@
 import express from 'express'
 import http from 'node:http'
-import { runner } from '~/runner'
+import { determinePort, runner, withApp } from '~/runner'
 import { microtest } from '..'
 
 const app = express()
@@ -72,4 +72,42 @@ test('can provide custom query parser', async () => {
 		.json()
 
 	expect(response).toMatchObject({ foo: 'bar' })
+})
+
+describe('withApp', () => {
+	test('can construct a new app on the fly', async () => {
+		const wrappedRequest = withApp(app)()
+		const response = await wrappedRequest((ctx) => ctx.get('/')).text()
+		expect(response).toEqual('Hello, World')
+	})
+
+	test('determinePort: throws if server is not started', () => {
+		const mockServer = {
+			address: () => null,
+		}
+
+		expect(() => determinePort(mockServer as any)).toThrow(
+			/server#address returned null/i
+		)
+	})
+
+	test('determinePort: throws if server is listing on pipe rather than port', () => {
+		const mockServer = {
+			address: () => 'foo',
+		}
+
+		expect(() => determinePort(mockServer as any)).toThrow(
+			/servers that listen on a unix domain socket or pipe are not supported/i
+		)
+	})
+
+	test('determinePort: otherwise returns server port', () => {
+		const mockServer = {
+			address: () => ({
+				port: 1234,
+			}),
+		}
+
+		expect(determinePort(mockServer as any)).toEqual(1234)
+	})
 })

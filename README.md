@@ -78,6 +78,31 @@ While this simple example, along with typescript autocomplete, is probably
 enough to get started, for more information, see the [full API
 documentation](https://michaelhelvey.github.io/microtest/).
 
+### Re-creating the application on each test
+
+Occassionally, your server will be constructed in such a way that you want to
+create, listen, and then tear down the server on every request, rather than
+starting and stopping your server in before & after each hooks. To accomodate
+this use-case, `microtest` provides the `withApp` higher order function:
+
+```ts
+test('my api integration test', () => {
+	// This single change will cause microtest to start and stop your server on
+	// a random port for each request.
+	const request = withApp(app)({
+		/* normal microtest configuration args */
+	})
+
+	// The rest of your test is identical:
+	const response = request((ctx) => ctx.post('/foo').json({ a: 'b' }))
+		.status(200)
+		.json<{ message: string }>()
+
+	// by this point in your test, the server will have been stopped
+	expect(response.message).toEqual('the message')
+})
+```
+
 ## Contributing
 
 Contributions through pull requests are welcome. If you make a pull request,

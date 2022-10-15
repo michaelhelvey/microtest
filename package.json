@@ -1,6 +1,6 @@
 {
 	"name": "@michaelhelvey/microtest",
-	"version": "2.0.0",
+	"version": "2.1.0",
 	"description": "Simple fetch-based integration testing library for Node.js",
 	"homepage": "https://github.com/michaelhelvey/microtest",
 	"repository": "github:michaelhelvey/microtest",
