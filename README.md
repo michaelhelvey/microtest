@@ -61,9 +61,9 @@ afterAll(async () => {
 
 const request = microtest('http://localhost:9999')
 
-test('my api integration test', () => {
+test('my api integration test', async () => {
 	// In this example, we make a request to the /foo endpoint with a JSON payload
-	const response = request((ctx) => ctx.post('/foo').json({ a: 'b' }))
+	const response = await request((ctx) => ctx.post('/foo').json({ a: 'b' }))
 		// then assert that the response has a 200 status:
 		.status(200)
 		// and assert + decode the response as json
@@ -86,7 +86,7 @@ starting and stopping your server in before & after each hooks. To accomodate
 this use-case, `microtest` provides the `withApp` higher order function:
 
 ```ts
-test('my api integration test', () => {
+test('my api integration test', async () => {
 	// This single change will cause microtest to start and stop your server on
 	// a random port for each request.
 	const request = withApp(app)({
@@ -94,7 +94,7 @@ test('my api integration test', () => {
 	})
 
 	// The rest of your test is identical:
-	const response = request((ctx) => ctx.post('/foo').json({ a: 'b' }))
+	const response = await request((ctx) => ctx.post('/foo').json({ a: 'b' }))
 		.status(200)
 		.json<{ message: string }>()
 
