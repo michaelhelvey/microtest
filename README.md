@@ -23,11 +23,6 @@ pnpm add -D @michaelhelvey/microtest
 
 _Or use the package manager of your choice._
 
-Please note that microtest only supports ESM. If you use a test runner like
-[vitest](https://vitest.dev) that supports ESM by default, this should not be a
-problem. For other test runners, see their documentation for handling ESM
-modules.
-
 ### Usage
 
 ```ts
