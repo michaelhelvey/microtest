@@ -5,5 +5,8 @@ export default defineConfig({
 	plugins: [tsconfigPaths()],
 	test: {
 		globals: true,
+		coverage: {
+			include: ['src'],
+		},
 	},
 })
